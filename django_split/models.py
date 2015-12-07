@@ -3,7 +3,10 @@ from django.db import models
 class ExperimentGroup(models.Model):
     experiment = models.CharField(max_length=48)
 
-    user = models.ForeignKey('auth.User', related_name=None)
+    user = models.ForeignKey(
+        'auth.User',
+        related_name='django_split_experiment_groups',
+    )
 
     group = models.IntegerField()
 
