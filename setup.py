@@ -31,5 +31,9 @@ setup(
         'inflection >=0.3, <1',
     ],
 
+    tests_require=[
+        'freezegun >=0.3.5',
+    ],
+
     test_suite='tests',
 )

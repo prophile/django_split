@@ -61,20 +61,20 @@ class Experiment(six.with_metaclass(ExperimentMeta)):
         # This will raise a ValueError if the group does not exist. Whilst
         # group_index is not used if we're before the experiment start date,
         # we want to catch errors from using the wrong group name immediately.
-        group_index = groups.index(group_name)
+        group_index = cls.groups.index(group_name)
 
         # TODO: superuser logic
 
         # Until the start of the experiment, all users are in the control group
-        if datetime.date.today() < self.start_date:
-            if group_name == self.control_group:
+        if datetime.date.today() < cls.start_date:
+            if group_name == cls.control_group:
                 return User.objects.all()
             else:
                 return User.objects.none()
 
         return User.objects.filter(id__in=
             ExperimentGroup.objects.filter(
-                experiment=self.slug,
+                experiment=cls.slug,
                 group=group_index,
             ),
         )
