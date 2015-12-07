@@ -1,4 +1,10 @@
 language: python
+addons:
+  apt:
+    packages:
+     - libatlas-dev
+     - liblapack-dev
+     - gfortran
 env:
   - DJANGO_VERSION=1.8.7
   - DJANGO_VERSION=1.9
