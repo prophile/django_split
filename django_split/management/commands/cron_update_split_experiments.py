@@ -72,5 +72,5 @@ class Command(BaseCommand):
                                 percentile=percentile,
                                 value=ppf(percentile / 100),
                             )
-                            for percentile in six.moves.range(1, 99 + 1)
+                            for percentile in six.moves.range(0, 100 + 1)
                         )

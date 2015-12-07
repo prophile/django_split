@@ -94,4 +94,4 @@ class CronTests(TestCase):
             metric=0,
         ).count()
 
-        self.assertEqual(num_results, 99)  # One for each percentile 1-99
+        self.assertEqual(num_results, 101)  # One for each percentile 0-100
