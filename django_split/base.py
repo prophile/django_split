@@ -2,6 +2,7 @@ import six
 import datetime
 import inflection
 
+from .utils import overlapping
 from .validation import validate_experiment
 
 EXPERIMENTS = {}
@@ -82,3 +83,74 @@ class Experiment(six.with_metaclass(ExperimentMeta)):
     @classmethod
     def in_group(cls, user, group):
         return user in cls.group(group)
+
+def experiment_status():
+    """An iterable of (experiment name, status, start date, end date, results)"""
+
+    now = datetime.date.today()
+
+    from .models import ExperimentState, ExperimentResult  # Avoid circular import
+
+    for experiment_state in ExperimentState.objects.order_by(
+        'experiment',
+    ).iterator():
+        results = []
+
+        experiment = EXPERIMENTS[experiment_state.experiment]
+
+        if experiment_state.completed is not None:
+            status = 'completed'
+
+            for metric_idx, metric in enumerate(experiment.metrics):
+                metric_name = metric.__name__
+                metric_description = getattr(metric, '__doc__', "")
+
+                by_group = {}
+
+                for group_idx, group in enumerate(experiment.groups):
+                    percentiles = dict(
+                        ExperimentResult.objects.filter(
+                            experiment=experiment.slug,
+                            group=group_idx,
+                            metric=metric_idx,
+                        ).values_list('percentile', 'value')
+                    )
+
+                    by_group[group] = percentiles
+
+                # Work out if any experiment group does not overlap with the
+                # control group error bars.
+
+                if any(not overlapping(
+                        (x[5], x[95]),
+                        (by_group[experiment.control_group][5],
+                         by_group[experiment.control_group][95])
+                    )
+                    for x in by_group.values()
+                ):
+                    # These results are significant
+                    results.append({
+                        'name': metric_name,
+                        'description': metric_description,
+                        'significant': True,
+                        'groups': by_group,
+                    })
+                else:
+                    results.append({
+                        'name': metric_name,
+                        'description': metric_description,
+                        'significant': False,
+                    })
+
+        elif experiment_state.started is not None:
+            status = 'running'
+        else:
+            status = 'upcoming'
+
+        yield (
+            experiment.slug,
+            status,
+            experiment.start_date,
+            experiment.end_date,
+            results,
+        )
