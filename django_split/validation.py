@@ -6,7 +6,7 @@ def validate_experiment(experiment):
 
     groups = experiment.groups
 
-    if len(groups) <= 2:
+    if len(groups) < 2:
         raise ValueError("Experiment must have at least two groups")
 
     for group in groups:
