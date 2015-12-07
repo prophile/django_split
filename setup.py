@@ -26,6 +26,7 @@ setup(
         'Django >=1.8',
         'numpy >=1.10, <2',
         'scipy >=0.16, <1',
+        'inflection >=0.3, <1',
     ],
     setup_requires=[
         'nose >=1.3, <2',
