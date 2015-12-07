@@ -76,7 +76,7 @@ class Experiment(six.with_metaclass(ExperimentMeta)):
             ExperimentGroup.objects.filter(
                 experiment=cls.slug,
                 group=group_index,
-            ),
+            ).values('user_id'),
         )
 
     @classmethod
