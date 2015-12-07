@@ -21,6 +21,12 @@ def validate_experiment(experiment):
     if experiment.control_group not in groups:
         raise ValueError("Control group not in groups")
 
+    if len(set(experiment.groups)) != len(experiment.groups):
+        raise ValueError("Duplicate group in groups list")
+
+    if not experiment.metrics:
+        raise ValueError("No metrics specified")
+
     if experiment.superuser_group is not None:
         if experiment.superuser_group not in groups:
             raise ValueError("Superuser group not in groups")
