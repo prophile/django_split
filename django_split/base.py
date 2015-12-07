@@ -2,9 +2,6 @@ import six
 import datetime
 import inflection
 
-from django.contrib.auth.models import User
-
-from .models import ExperimentGroup
 from .validation import validate_experiment
 
 EXPERIMENTS = {}
@@ -57,6 +54,10 @@ class Experiment(six.with_metaclass(ExperimentMeta)):
 
     @classmethod
     def group(cls, group_name):
+        # Lazy-load these to avoid import issues
+        from django.contrib.auth.models import User
+        from .models import ExperimentGroup
+
         # This will raise a ValueError if the group does not exist. Whilst
         # group_index is not used if we're before the experiment start date,
         # we want to catch errors from using the wrong group name immediately.

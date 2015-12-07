@@ -10,6 +10,7 @@ setup(
     author_email='tech@thread.com',
     description='Split testing for Django',
     long_description=long_description,
+
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -22,13 +23,13 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
+
     install_requires=[
         'Django >=1.8',
         'numpy >=1.10, <2',
         'scipy >=0.16, <1',
         'inflection >=0.3, <1',
     ],
-    setup_requires=[
-        'nose >=1.3, <2',
-    ],
+
+    test_suite='tests',
 )
