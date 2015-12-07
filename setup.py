@@ -13,6 +13,9 @@ setup(
 
     classifiers=[
         'Development Status :: 3 - Alpha',
+        'Framework :: Django',
+        'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
@@ -22,6 +25,8 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Software Development :: Libraries',
     ],
 
     install_requires=[
