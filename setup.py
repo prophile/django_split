@@ -10,6 +10,7 @@ setup(
     author_email='tech@thread.com',
     description='Split testing for Django',
     long_description=long_description,
+    packages=find_packages(),
 
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -36,9 +37,7 @@ setup(
         'inflection >=0.3, <1',
     ],
 
-    tests_require=[
+    setup_requires=[
         'freezegun >=0.3.5',
     ],
-
-    test_suite='tests',
 )
