@@ -1,7 +1,6 @@
+import pytest
 import datetime
 import freezegun
-
-from django.test import TestCase
 
 from django.contrib.auth.models import User
 
@@ -19,31 +18,34 @@ class TestExperiment(Experiment):
 
     include_new_users = False
 
+@pytest.mark.django_db
 @freezegun.freeze_time('2016-01-01')
-class GroupingTests(TestCase):
-    def setUp(self):
-        self.user = User.objects.create(
+class GroupingTests(object):
+    def make_user(self):
+        return User.objects.create(
             username="bees",
             email="bees@example.com",
         )
 
     def test_does_not_throw_exceptions(self):
-        TestExperiment.in_group(self.user, 'experiment')
+        TestExperiment.in_group(self.make_user(), 'experiment')
 
     def test_user_looked_up_through_database(self):
+        user = self.make_user()
         ExperimentGroup.objects.create(
             experiment=TestExperiment.slug,
-            user=self.user,
+            user=user,
             group=1,
         )
-        self.assertTrue(TestExperiment.in_group(self.user, 'experiment'))
+        assert TestExperiment.in_group(user, 'experiment')
 
     def test_all_users_in_control_group_before_start(self):
+        user = self.make_user()
         ExperimentGroup.objects.create(
             experiment=TestExperiment.slug,
-            user=self.user,
+            user=user,
             group=1,
         )
         with freezegun.freeze_time('2015-12-01'):
-            self.assertTrue(TestExperiment.in_group(self.user, 'control'))
-            self.assertFalse(TestExperiment.in_group(self.user, 'experiment'))
+            assert TestExperiment.in_group(user, 'control')
+            assert not TestExperiment.in_group(user, 'experiment')

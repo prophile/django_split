@@ -1,8 +1,9 @@
+import pytest
 import datetime
 import freezegun
 
 from django.core.management import call_command
-from django.test import TestCase
+
 from django_split import Experiment
 from django_split.models import ExperimentState, ExperimentResult
 
@@ -15,7 +16,8 @@ class CronExperiment(Experiment):
 
     metrics = (null_metric,)
 
-class CronTests(TestCase):
+@pytest.mark.django_db
+class CronTests(object):
     def run_command(self):
         call_command('cron_update_split_experiments')
 
@@ -33,17 +35,12 @@ class CronTests(TestCase):
     @freezegun.freeze_time('2015-12-31')
     def test_does_not_start_experiments_early(self):
         self.run_command()
-        self.assertIsNone(
-            self.get_state().started,
-        )
+        assert self.get_state().started is None
 
     @freezegun.freeze_time('2016-01-01')
     def test_starts_experiments(self):
         self.run_command()
-        self.assertEqual(
-            self.get_state().started,
-            datetime.datetime(2016, 1, 1),
-        )
+        assert self.get_state().started == datetime.datetime(2016, 1, 1)
 
     def test_does_not_restart_experiments(self):
         with freezegun.freeze_time('2016-01-01'):
@@ -52,25 +49,17 @@ class CronTests(TestCase):
         with freezegun.freeze_time('2016-01-02'):
             self.run_command()
 
-        self.assertEqual(
-            self.get_state().started,
-            datetime.datetime(2016, 1, 1),
-        )
+        assert self.get_state().started == datetime.datetime(2016, 1, 1)
 
     @freezegun.freeze_time('2016-01-12')
     def test_does_not_end_experiments_early(self):
         self.run_command()
-        self.assertIsNone(
-            self.get_state().completed,
-        )
+        assert self.get_state().completed is None
 
     @freezegun.freeze_time('2016-02-01')
     def test_ends_experiments(self):
         self.run_command()
-        self.assertEqual(
-            self.get_state().completed,
-            datetime.datetime(2016, 2, 1),
-        )
+        assert self.get_state().completed ==  datetime.datetime(2016, 2, 1)
 
     def test_does_not_double_complete_experiments(self):
         with freezegun.freeze_time('2016-02-01'):
@@ -79,10 +68,7 @@ class CronTests(TestCase):
         with freezegun.freeze_time('2016-02-02'):
             self.run_command()
 
-        self.assertEqual(
-            self.get_state().completed,
-            datetime.datetime(2016, 2, 1),
-        )
+        assert self.get_state().completed == datetime.datetime(2016, 2, 1)
 
     @freezegun.freeze_time('2016-02-01')
     def test_records_metrics_for_completed_experiments(self):
@@ -94,4 +80,4 @@ class CronTests(TestCase):
             metric=0,
         ).count()
 
-        self.assertEqual(num_results, 101)  # One for each percentile 0-100
+        assert num_results == 101  # One for each percentile 0-100

@@ -1,8 +1,8 @@
-from unittest import TestCase
+import pytest
 
 from django_split.utils import overlapping
 
-class OverlappingTests(TestCase):
+class OverlappingTests(object):
     def test_identity(self):
         assert overlapping(
             (10, 30),
@@ -58,14 +58,14 @@ class OverlappingTests(TestCase):
         )
 
     def test_swapped_elements_in_first_argument_raises_valueerror(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             overlapping(
                 (10, 0),
                 (0, 10),
             )
 
     def test_swapped_elements_in_second_argument_raises_valueerror(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             overlapping(
                 (0, 10),
                 (10, 0),
