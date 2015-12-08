@@ -10,6 +10,7 @@ setup(
     author_email='tech@thread.com',
     description='Split testing for Django',
     long_description=long_description,
+    packages=find_packages(),
 
     classifiers=[
         'Development Status :: 3 - Alpha',
